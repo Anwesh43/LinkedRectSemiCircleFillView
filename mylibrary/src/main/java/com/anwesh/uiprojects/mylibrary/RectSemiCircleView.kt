@@ -227,4 +227,13 @@ class RectSemiCircleView(ctx : Context) : View(ctx) {
             }
         }
     }
+
+    companion object {
+
+        fun create(activity : Activity) : RectSemiCircleView {
+            val view : RectSemiCircleView = RectSemiCircleView(activity)
+            activity.setContentView(view)
+            return view
+        }
+    }
 }
