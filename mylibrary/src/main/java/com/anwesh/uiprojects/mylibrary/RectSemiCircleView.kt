@@ -14,10 +14,10 @@ import android.graphics.Path
 import android.graphics.Color
 import android.content.Context
 
-val parts : Int = 3
+val parts : Int = 5
 val scGap : Float = 0.02f / parts
 val strokeFactor : Float = 90f
-val sizeFactor : Float = 2.9f
+val sizeFactor : Float = 1.5f
 val delay : Long = 20
 val backColor : Int = Color.parseColor("#BDBDBD")
 val colors : Array<Int> = arrayOf(
@@ -38,6 +38,7 @@ fun Float.divideScale(i : Int, n : Int) : Float = Math.min(n.inverse(), maxScale
 fun Float.sinify() : Float = Math.sin(this * Math.PI).toFloat()
 
 fun Canvas.drawRectSemiCircleFillPath(scale : Float, w : Float, h : Float, r : Float, paint : Paint) {
+    paint.style = Paint.Style.FILL
     save()
     val path : Path = Path()
     path.moveTo(- r, h / 2)
@@ -46,24 +47,27 @@ fun Canvas.drawRectSemiCircleFillPath(scale : Float, w : Float, h : Float, r : F
     path.lineTo(r, h / 2)
     path.lineTo(-r, h / 2)
     clipPath(path)
-    drawRect(RectF(-r, h / 2 * (1 - scale), r, h / 2), paint)
+    drawRect(RectF(-r, h / 2 - (h / 2 + r) * scale, r, h / 2), paint)
     restore()
 }
 
 fun Canvas.drawRectSemiCircle(scale : Float, w : Float, h : Float, paint : Paint) {
     val size : Float = Math.min(w, h) / sizeFactor
     val sf : Float = scale.sinify()
-    val sf1 : Float = sf.divideScale(0, parts)
     val sf2 : Float = sf.divideScale(1, parts)
+    val sf4 : Float = sf.divideScale(3, parts)
     save()
     translate(w / 2, h / 2)
+    paint.style = Paint.Style.STROKE
     for (j in 0..1) {
+        val sfj : Float = sf.divideScale(j * 2, parts)
         save()
-        translate(w / 2 - size / 2  + size * j, h)
-        drawLine(0f, 0f, 0f, h / 2 * sf1, paint)
+        translate(-size / 2  + size * j, h / 2 * (1 - j))
+        drawLine(0f, 0f, 0f, (h / 2 * sfj) * (2 * j - 1), paint)
         restore()
     }
-    drawRectSemiCircleFillPath(sf2, w, h, size / 2, paint)
+    drawArc(RectF(-size / 2, -size / 2, size / 2, size / 2), deg, deg * sf2, false, paint)
+    drawRectSemiCircleFillPath(sf4, w, h, size / 2, paint)
     restore()
 }
 
