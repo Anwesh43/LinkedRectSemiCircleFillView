@@ -202,4 +202,27 @@ class RectSemiCircleView(ctx : Context) : View(ctx) {
             curr.startUpdating(cb)
         }
     }
+
+    data class Renderer(var view : RectSemiCircleView) {
+
+        private val animator : Animator = Animator(view)
+        private val rsc : RectSemiCircle = RectSemiCircle(0)
+        private val paint : Paint = Paint(Paint.ANTI_ALIAS_FLAG)
+
+        fun render(canvas : Canvas) {
+            canvas.drawColor(backColor)
+            rsc.draw(canvas, paint)
+            animator.animate {
+                rsc.update {
+                    animator.stop()
+                }
+            }
+        }
+
+        fun handleTap() {
+            rsc.startUpdating {
+                animator.start()
+            }
+        }
+    }
 }
